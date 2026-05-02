@@ -95,8 +95,8 @@
   .hero-overlay {
     position: absolute; inset: 0; z-index: 1;
     background:
-      linear-gradient(to bottom, rgba(13,13,15,0.55) 0%, transparent 35%, transparent 60%, rgba(13,13,15,0.85) 100%),
-      linear-gradient(to right, rgba(13,13,15,0.5) 0%, transparent 50%);
+      linear-gradient(to bottom, rgba(13,13,15,0.7) 0%, rgba(13,13,15,0.3) 35%, rgba(13,13,15,0.4) 60%, rgba(13,13,15,0.92) 100%),
+      linear-gradient(to right, rgba(13,13,15,0.75) 0%, rgba(13,13,15,0.2) 60%, rgba(13,13,15,0.5) 100%);
   }
   .hero-content { position: relative; z-index: 2; max-width: 900px; }
   .hero-eyebrow {
@@ -1019,7 +1019,7 @@
     // Load background image
     img = new Image();
     img.crossOrigin = 'anonymous';
-    img.src = 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1800&q=80';
+    img.src = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1800&q=80';
     img.onload = () => { imgLoaded = true; };
 
     // Bokeh particles
@@ -1089,7 +1089,7 @@
         const fitScale = Math.max(W / iw, H / ih) * kbScale;
         const dx = (W - iw * fitScale) / 2 + kbOffX * W;
         const dy = (H - ih * fitScale) / 2 + kbOffY * H;
-        ctx.filter = 'brightness(0.22) saturate(0.38)';
+        ctx.filter = 'brightness(0.13) saturate(0.3)';
         ctx.drawImage(img, dx, dy, iw * fitScale, ih * fitScale);
         ctx.filter = 'none';
         ctx.restore();
