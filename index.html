@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plinth — Institutional Consultancy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #C8A96E;
+    --gold-light: #E8D5A3;
+    --gold-dark: #9A7A45;
+    --ink: #0D0D0F;
+    --ink-soft: #1A1A1F;
+    --ink-mid: #2C2C35;
+    --white: #FAFAF7;
+    --white-soft: #F0EFEA;
+    --cream: #F7F4EE;
+    --text-muted: #8A8878;
+    --text-body: #E8E6DF;
+  }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    background: var(--ink);
+    color: var(--white);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    position: fixed; width: 8px; height: 8px; background: var(--gold);
+    border-radius: 50%; pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease; mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid rgba(200,169,110,0.5); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transition: transform 0.4s ease, width 0.3s, height 0.3s, border-color 0.3s;
+  }
+  body:hover .cursor { transform: translate(-50%, -50%); }
+  a:hover ~ .cursor, button:hover ~ .cursor { transform: translate(-50%, -50%) scale(2); }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 4rem;
+    background: linear-gradient(180deg, rgba(13,13,15,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(12px);
+    transition: padding 0.4s ease;
+  }
+  nav.scrolled { padding: 1rem 4rem; background: rgba(13,13,15,0.97); }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 600; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-muted); text-decoration: none;
+    transition: color 0.3s; font-weight: 400;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta {
+    font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 0.6rem 1.6rem; border: 1px solid var(--gold);
+    color: var(--gold); background: transparent;
+    text-decoration: none; transition: all 0.3s; font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+  }
+  .nav-cta:hover { background: var(--gold); color: var(--ink); }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; position: relative; overflow: hidden;
+    padding: 8rem 4rem 4rem;
+  }
+  #hero-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    z-index: 0;
+  }
+  .hero-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    background:
+      linear-gradient(to bottom, rgba(13,13,15,0.55) 0%, transparent 35%, transparent 60%, rgba(13,13,15,0.85) 100%),
+      linear-gradient(to right, rgba(13,13,15,0.5) 0%, transparent 50%);
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 900px; }
+  .hero-eyebrow {
+    font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;
+    opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+  .hero-eyebrow::before { content: ''; width: 40px; height: 1px; background: var(--gold); }
+  .hero-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 7vw, 7rem);
+    font-weight: 300; line-height: 1.05;
+    color: var(--white); margin-bottom: 2rem;
+    opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+  .hero-headline em { font-style: italic; color: var(--gold); }
+  .hero-sub {
+    font-size: 1rem; color: var(--text-body); max-width: 520px;
+    line-height: 1.8; font-weight: 300; margin-bottom: 3rem;
+    opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+  .hero-actions {
+    display: flex; gap: 1.2rem; align-items: center;
+    opacity: 0; animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+  .btn-primary {
+    padding: 1rem 2.4rem; background: var(--gold); color: var(--ink);
+    font-family: 'Outfit', sans-serif; font-size: 0.75rem;
+    letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500;
+    text-decoration: none; transition: all 0.3s; border: none; cursor: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 12px 30px rgba(200,169,110,0.3); }
+  .btn-ghost {
+    padding: 1rem 2.4rem; border: 1px solid rgba(255,255,255,0.2);
+    color: var(--white); font-family: 'Outfit', sans-serif; font-size: 0.75rem;
+    letter-spacing: 0.2em; text-transform: uppercase; font-weight: 400;
+    text-decoration: none; transition: all 0.3s; cursor: none; display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .hero-scroll {
+    position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    color: var(--text-muted); font-size: 0.65rem; letter-spacing: 0.2em;
+    text-transform: uppercase; z-index: 2;
+    opacity: 0; animation: fadeIn 1s ease 1.2s forwards;
+  }
+  .scroll-line { width: 1px; height: 40px; background: var(--gold); animation: scrollPulse 2s ease infinite; }
+  .hero-stats {
+    position: absolute; right: 4rem; bottom: 4rem; z-index: 2;
+    display: flex; flex-direction: column; gap: 1.5rem;
+    opacity: 0; animation: fadeLeft 0.8s ease 1s forwards;
+  }
+  .stat-item { text-align: right; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif; font-size: 3rem;
+    font-weight: 300; color: var(--gold); line-height: 1;
+  }
+  .stat-label { font-size: 0.65rem; letter-spacing: 0.15em; color: var(--text-muted); text-transform: uppercase; margin-top: 0.25rem; }
+
+  /* SECTION COMMON */
+  section { padding: 7rem 4rem; }
+  .section-tag {
+    font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.8rem;
+  }
+  .section-tag::before { content: ''; width: 24px; height: 1px; background: var(--gold); }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 4.5vw, 4rem);
+    font-weight: 300; line-height: 1.1; margin-bottom: 1.5rem; color: var(--white);
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+  .section-body { font-size: 1rem; color: var(--text-muted); line-height: 1.9; max-width: 560px; font-weight: 300; }
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* CHALLENGE */
+  #challenge {
+    background: var(--ink-soft);
+    position: relative; overflow: hidden;
+  }
+  #challenge::before {
+    content: ''; position: absolute; top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,169,110,0.06) 0%, transparent 70%);
+  }
+  .challenge-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+  .challenge-image {
+    position: relative; height: 500px; overflow: hidden;
+  }
+  .challenge-image img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.4) brightness(0.7); transition: filter 0.6s; }
+  .challenge-image:hover img { filter: saturate(0.6) brightness(0.85); }
+  .challenge-image::after {
+    content: ''; position: absolute; inset: 0;
+    border: 1px solid rgba(200,169,110,0.2);
+    pointer-events: none;
+  }
+  .challenge-image-label {
+    position: absolute; bottom: 1.5rem; left: 1.5rem;
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); padding: 0.4rem 0.8rem;
+    background: rgba(13,13,15,0.8); backdrop-filter: blur(8px);
+  }
+  .stats-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 3rem; background: rgba(200,169,110,0.1); }
+  .stat-box { padding: 2rem 1.5rem; background: var(--ink-soft); text-align: center; transition: background 0.3s; }
+  .stat-box:hover { background: var(--ink-mid); }
+  .stat-box-num {
+    font-family: 'Cormorant Garamond', serif; font-size: 3.5rem;
+    font-weight: 300; color: var(--gold); line-height: 1;
+  }
+  .stat-box-label { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.5; letter-spacing: 0.05em; }
+
+  /* JOURNEY */
+  #journey { background: var(--ink); position: relative; overflow: hidden; }
+  .journey-intro { display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: start; margin-bottom: 5rem; }
+  .journey-insight {
+    padding: 2rem; border-left: 2px solid var(--gold);
+    background: rgba(200,169,110,0.04); margin-top: 2rem;
+  }
+  .journey-insight p { font-size: 0.9rem; color: var(--text-body); line-height: 1.8; font-style: italic; }
+  .stages-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; }
+  .stage-card {
+    padding: 2.5rem 1.5rem; border: 1px solid rgba(255,255,255,0.06);
+    position: relative; overflow: hidden; transition: all 0.4s;
+    cursor: none;
+  }
+  .stage-card:hover { background: rgba(200,169,110,0.05); border-color: var(--gold); }
+  .stage-card::before {
+    content: attr(data-num); position: absolute; top: -1rem; right: 1rem;
+    font-family: 'Cormorant Garamond', serif; font-size: 6rem; font-weight: 300;
+    color: rgba(200,169,110,0.06); line-height: 1; pointer-events: none;
+    transition: color 0.4s;
+  }
+  .stage-card:hover::before { color: rgba(200,169,110,0.1); }
+  .stage-num {
+    font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem;
+  }
+  .stage-name {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.5rem;
+    font-weight: 400; color: var(--white); margin-bottom: 1rem;
+  }
+  .stage-events { list-style: none; }
+  .stage-events li {
+    font-size: 0.7rem; color: var(--text-muted); padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    letter-spacing: 0.05em; transition: color 0.3s;
+  }
+  .stage-card:hover .stage-events li { color: var(--text-body); }
+  .stage-bar {
+    position: absolute; bottom: 0; left: 0;
+    height: 2px; background: var(--gold); width: 0;
+    transition: width 0.5s ease;
+  }
+  .stage-card:hover .stage-bar { width: 100%; }
+
+  /* CALENDAR */
+  #calendar { background: var(--cream); color: var(--ink); position: relative; overflow: hidden; }
+  #calendar .section-title { color: var(--ink); }
+  #calendar .section-body { color: #5a5a5a; }
+  #calendar .section-tag { color: var(--gold-dark); }
+  #calendar .section-tag::before { background: var(--gold-dark); }
+  .calendar-header { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-bottom: 4rem; }
+  .cal-img { position: relative; height: 350px; overflow: hidden; }
+  .cal-img img { width: 100%; height: 100%; object-fit: cover; }
+  .cal-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, var(--cream) 0%, transparent 30%); }
+  .calendar-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+  .calendar-table thead tr { border-bottom: 2px solid rgba(0,0,0,0.1); }
+  .calendar-table th {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold-dark); padding: 1rem 1.2rem; text-align: left;
+    font-weight: 500;
+  }
+  .calendar-table td {
+    padding: 1rem 1.2rem; font-size: 0.85rem; color: #3a3a3a;
+    border-bottom: 1px solid rgba(0,0,0,0.06); vertical-align: middle;
+  }
+  .calendar-table tr:hover td { background: rgba(200,169,110,0.07); }
+  .cal-badge {
+    display: inline-block; padding: 0.2rem 0.7rem;
+    font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+    border-radius: 2px; font-weight: 500;
+  }
+  .badge-academic { background: rgba(200,169,110,0.15); color: var(--gold-dark); }
+  .badge-community { background: rgba(60,130,100,0.15); color: #2a8060; }
+  .badge-marketing { background: rgba(60,80,170,0.12); color: #3050aa; }
+  .badge-visibility { background: rgba(170,60,60,0.12); color: #aa3040; }
+  .cal-month {
+    display: inline-block; padding: 0.2rem 0.7rem;
+    background: var(--ink); color: var(--gold); font-size: 0.65rem;
+    letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
+  }
+
+  /* EVENTS */
+  #events { background: var(--ink-soft); }
+  .events-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-bottom: 5rem; }
+  .event-img { height: 280px; overflow: hidden; position: relative; }
+  .event-img img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.5) brightness(0.6); }
+  .event-img::after { content: ''; position: absolute; inset: 0; border: 1px solid rgba(200,169,110,0.2); }
+  .events-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(200,169,110,0.1); }
+  .event-card {
+    background: var(--ink-soft); padding: 2.5rem 2rem;
+    transition: all 0.4s; cursor: none; position: relative; overflow: hidden;
+  }
+  .event-card:hover { background: var(--ink-mid); }
+  .event-month {
+    font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.2rem;
+  }
+  .event-name {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.6rem;
+    font-weight: 400; color: var(--white); margin-bottom: 1.5rem; line-height: 1.2;
+  }
+  .event-points { list-style: none; }
+  .event-points li {
+    font-size: 0.8rem; color: var(--text-muted); padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-left: 1rem; position: relative; line-height: 1.6;
+    transition: color 0.3s;
+  }
+  .event-points li::before { content: '→'; position: absolute; left: 0; color: var(--gold); font-size: 0.7rem; }
+  .event-card:hover .event-points li { color: var(--text-body); }
+  .event-card-5 { grid-column: span 3; display: grid; grid-template-columns: 1fr 2fr; gap: 0; }
+  .event-card-5-img { overflow: hidden; }
+  .event-card-5-img img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.4) brightness(0.5); transition: filter 0.5s; }
+  .event-card-5:hover .event-card-5-img img { filter: saturate(0.6) brightness(0.65); }
+  .event-card-5-content { padding: 2.5rem 2rem; background: var(--ink-mid); }
+
+  /* CHANNELS */
+  #channels { background: var(--ink); }
+  .channels-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .channel-img { position: relative; height: 600px; overflow: hidden; }
+  .channel-img img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.3) brightness(0.5); }
+  .channel-img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to right, transparent 60%, var(--ink) 100%);
+  }
+  .channels-content { padding-top: 1rem; }
+  .channel-block { margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .channel-block:last-child { border-bottom: none; }
+  .channel-icon {
+    width: 40px; height: 40px; border: 1px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.2rem; font-size: 1.1rem;
+  }
+  .channel-name {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.4rem;
+    font-weight: 400; color: var(--white); margin-bottom: 1rem;
+  }
+  .channel-points { list-style: none; }
+  .channel-points li {
+    font-size: 0.82rem; color: var(--text-muted); padding: 0.4rem 0;
+    padding-left: 1.2rem; position: relative; line-height: 1.7;
+  }
+  .channel-points li::before { content: '–'; position: absolute; left: 0; color: var(--gold); }
+
+  /* PRICING */
+  #pricing { background: var(--ink-soft); }
+  .pricing-header { text-align: center; margin-bottom: 4rem; }
+  .pricing-header .section-tag { justify-content: center; }
+  .pricing-header .section-tag::before { display: none; }
+  .pricing-header .section-title { max-width: 600px; margin: 0 auto 1rem; }
+  .pricing-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(200,169,110,0.1); }
+  .price-card {
+    background: var(--ink-soft); padding: 3rem 2.5rem;
+    transition: background 0.4s; cursor: none; position: relative;
+  }
+  .price-card:hover { background: var(--ink-mid); }
+  .price-card.featured { background: rgba(200,169,110,0.08); }
+  .price-card.featured:hover { background: rgba(200,169,110,0.13); }
+  .price-featured-label {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink); background: var(--gold); padding: 0.3rem 0.7rem;
+  }
+  .price-type {
+    font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.5rem;
+  }
+  .price-name {
+    font-family: 'Cormorant Garamond', serif; font-size: 2rem;
+    font-weight: 300; color: var(--white); margin-bottom: 0.5rem;
+  }
+  .price-range {
+    font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem;
+    padding-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .price-range strong { color: var(--gold); font-weight: 500; font-size: 1rem; }
+  .price-features { list-style: none; margin-bottom: 2.5rem; }
+  .price-features li {
+    font-size: 0.8rem; color: var(--text-muted); padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding-left: 1.2rem; position: relative; line-height: 1.6;
+    transition: color 0.3s;
+  }
+  .price-features li::before { content: '✓'; position: absolute; left: 0; color: var(--gold); font-size: 0.7rem; }
+  .price-card:hover .price-features li { color: var(--text-body); }
+  .price-cta {
+    display: block; text-align: center; padding: 0.9rem;
+    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); border: 1px solid var(--gold); text-decoration: none;
+    transition: all 0.3s; font-weight: 500;
+  }
+  .price-cta:hover { background: var(--gold); color: var(--ink); }
+  .price-card.featured .price-cta { background: var(--gold); color: var(--ink); }
+  .price-card.featured .price-cta:hover { background: var(--gold-light); }
+
+  /* WHY */
+  #why { background: var(--ink); }
+  .why-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 5rem; align-items: center; }
+  .why-img { position: relative; height: 550px; overflow: hidden; }
+  .why-img img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.4) brightness(0.6); }
+  .why-img-quote {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 2.5rem 2rem;
+    background: linear-gradient(to top, rgba(13,13,15,0.95) 0%, transparent 100%);
+  }
+  .why-img-quote p {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 1.3rem; color: var(--white); line-height: 1.5;
+  }
+  .why-img-quote cite { font-size: 0.7rem; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-style: normal; display: block; margin-top: 0.8rem; }
+  .why-points { margin-top: 2rem; }
+  .why-point { padding: 1.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .why-point:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+  .why-point-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.2rem;
+    color: var(--white); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.8rem;
+  }
+  .why-point-title::before { content: ''; width: 6px; height: 6px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+  .why-point-text { font-size: 0.82rem; color: var(--text-muted); line-height: 1.8; padding-left: 1.4rem; }
+
+  /* CTA */
+  #cta {
+    background: var(--cream); color: var(--ink);
+    text-align: center; padding: 8rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  #cta::before {
+    content: 'PLINTH'; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Cormorant Garamond', serif; font-size: 18vw;
+    font-weight: 300; color: rgba(0,0,0,0.04); letter-spacing: 0.2em;
+    white-space: nowrap; pointer-events: none;
+  }
+  #cta .section-tag { justify-content: center; color: var(--gold-dark); }
+  #cta .section-tag::before { background: var(--gold-dark); }
+  #cta .section-title { color: var(--ink); max-width: 700px; margin: 0 auto 1.5rem; }
+  #cta .section-body { max-width: 500px; margin: 0 auto 3rem; }
+  .cta-contact { display: flex; justify-content: center; gap: 3rem; margin-top: 3rem; flex-wrap: wrap; }
+  .contact-item { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+  .contact-label { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-dark); }
+  .contact-value { font-size: 0.9rem; color: var(--ink); }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); padding: 3rem 4rem;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.2rem;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--white);
+  }
+  .footer-logo span { color: var(--gold); }
+  .footer-text { font-size: 0.7rem; color: var(--text-muted); letter-spacing: 0.1em; }
+  .footer-tagline { font-size: 0.75rem; color: var(--text-muted); font-style: italic; font-family: 'Cormorant Garamond', serif; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fadeLeft { from { opacity: 0; transform: translateX(25px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes scrollPulse { 0%, 100% { transform: scaleY(1); opacity: 1; } 50% { transform: scaleY(0.5); opacity: 0.4; } }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 5rem 1.5rem; }
+    #hero { padding: 6rem 1.5rem 4rem; }
+    .hero-stats { display: none; }
+    .hero-headline { font-size: 3rem; }
+    .challenge-layout, .journey-intro, .events-intro, .channels-layout, .why-layout, #cta { grid-template-columns: 1fr; }
+    .stages-grid { grid-template-columns: 1fr 1fr; }
+    .events-grid { grid-template-columns: 1fr; }
+    .event-card-5 { grid-column: span 1; grid-template-columns: 1fr; }
+    .event-card-5-img { height: 200px; }
+    .pricing-cards { grid-template-columns: 1fr; }
+    .stats-trio { grid-template-columns: 1fr; }
+    .calendar-table { font-size: 0.75rem; }
+    .cta-contact { gap: 1.5rem; }
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">P<span>L</span>INTH</a>
+  <ul class="nav-links">
+    <li><a href="#challenge">The Challenge</a></li>
+    <li><a href="#journey">Framework</a></li>
+    <li><a href="#calendar">Calendar</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#pricing">Engage</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Begin Conversation</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Institutional Consultancy · K-12 · Pan-India</div>
+    <h1 class="hero-headline">
+      The <em>Event-Driven</em><br>Admission Funnel
+    </h1>
+    <p class="hero-sub">How K-12 schools can use their academic calendar to build brand, reach families, and fill every classroom — across 12 months of strategic engagement.</p>
+    <div class="hero-actions">
+      <a href="#challenge" class="btn-primary">Explore the Approach</a>
+      <a href="#cta" class="btn-ghost">Talk to Plinth</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">70<span style="font-size:1.5rem">%</span></div>
+      <div class="stat-label">Decide before visiting<br>the admission office</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3<span style="font-size:1.5rem">x</span></div>
+      <div class="stat-label">More inquiries from<br>event-attending families</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">6<span style="font-size:1.5rem">wk</span></div>
+      <div class="stat-label">Organic reach from one<br>well-executed event</div>
+    </div>
+  </div>
+</section>
+
+<!-- CHALLENGE -->
+<section id="challenge">
+  <div class="challenge-layout">
+    <div class="reveal">
+      <div class="section-tag">The Problem</div>
+      <h2 class="section-title">Quality alone<br>doesn't fill <em>seats</em></h2>
+      <p class="section-body">Schools across India invest in infrastructure, curriculum, and teacher training — yet admissions remain a recurring anxiety. The reason is rarely about quality. It is almost always visibility and trust.</p>
+      <p class="section-body" style="margin-top:1.2rem">Most schools treat admissions as a February–March activity. By that point, the best families have already decided.</p>
+      <div class="journey-insight" style="margin-top:2rem">
+        <p>"Schools that consistently fill seats treat admissions as a 12-month relationship-building effort — anchored in events that bring families onto campus and into conversation."</p>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s">
+      <div class="challenge-image">
+        <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80" alt="School Campus">
+        <div class="challenge-image-label">The Opportunity</div>
+      </div>
+      <div class="stats-trio">
+        <div class="stat-box">
+          <div class="stat-box-num" data-target="70">0</div><div style="font-family:Cormorant Garamond,serif;color:var(--gold);font-size:1.5rem">%</div>
+          <div class="stat-box-label">of parents decide<br>before visiting the office</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-num" data-target="3">0</div><div style="font-family:Cormorant Garamond,serif;color:var(--gold);font-size:1.5rem">×</div>
+          <div class="stat-box-label">more inquiries from<br>event-attending families</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-num" data-target="6">0</div><div style="font-family:Cormorant Garamond,serif;color:var(--gold);font-size:1.5rem">wk</div>
+          <div class="stat-box-label">of organic reach from<br>one well-run event</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JOURNEY -->
+<section id="journey">
+  <div class="journey-intro reveal">
+    <div>
+      <div class="section-tag">The Framework</div>
+      <h2 class="section-title">The 5-Stage<br><em>Parent Decision</em><br>Journey</h2>
+    </div>
+    <div>
+      <p class="section-body">Every parent who enrolls their child passes through five mental stages. Each stage calls for a different kind of event and communication.</p>
+      <div class="journey-insight" style="margin-top:1.5rem">
+        <p>Schools that engage families across all 5 stages see <strong style="color:var(--gold)">2–3× higher enrollment conversion</strong> than those running only a final-quarter admission drive.</p>
+      </div>
+    </div>
+  </div>
+  <div class="stages-grid reveal" style="transition-delay:0.3s">
+    <div class="stage-card" data-num="1">
+      <div class="stage-bar"></div>
+      <div class="stage-num">Stage 01</div>
+      <div class="stage-name">Awareness</div>
+      <ul class="stage-events">
+        <li>Cultural Fest</li>
+        <li>Sports Meet</li>
+        <li>STEM Expo</li>
+        <li>Media Day</li>
+      </ul>
+    </div>
+    <div class="stage-card" data-num="2">
+      <div class="stage-bar"></div>
+      <div class="stage-num">Stage 02</div>
+      <div class="stage-name">Interest</div>
+      <ul class="stage-events">
+        <li>Science Fair</li>
+        <li>Alumni Talk</li>
+        <li>Open School Day</li>
+      </ul>
+    </div>
+    <div class="stage-card" data-num="3">
+      <div class="stage-bar"></div>
+      <div class="stage-num">Stage 03</div>
+      <div class="stage-name">Consideration</div>
+      <ul class="stage-events">
+        <li>Discovery Camp</li>
+        <li>Parent Fest</li>
+        <li>Annual Day</li>
+      </ul>
+    </div>
+    <div class="stage-card" data-num="4">
+      <div class="stage-bar"></div>
+      <div class="stage-num">Stage 04</div>
+      <div class="stage-name">Decision</div>
+      <ul class="stage-events">
+        <li>Early Registration</li>
+        <li>Admission Push</li>
+        <li>Campus Walk</li>
+      </ul>
+    </div>
+    <div class="stage-card" data-num="5">
+      <div class="stage-bar"></div>
+      <div class="stage-num">Stage 05</div>
+      <div class="stage-name">Advocacy</div>
+      <ul class="stage-events">
+        <li>Induction Day</li>
+        <li>Referral Cards</li>
+        <li>Alumni Network</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CALENDAR -->
+<section id="calendar">
+  <div class="calendar-header">
+    <div class="reveal">
+      <div class="section-tag">Annual Strategy</div>
+      <h2 class="section-title">12-Month<br><em>Event</em> Calendar</h2>
+      <p class="section-body">A recommended annual event calendar mapped by month and purpose — ensuring consistent visibility across the full parent decision cycle.</p>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s">
+      <div class="cal-img">
+        <img src="https://images.unsplash.com/photo-1563461660947-507ef49e9c47?w=800&q=80" alt="School Events">
+      </div>
+    </div>
+  </div>
+  <div class="reveal" style="transition-delay:0.3s; overflow-x:auto">
+    <table class="calendar-table">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Event</th>
+          <th>Type</th>
+          <th>Funnel Stage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="cal-month">April</span></td><td>Science & Innovation Fair</td><td><span class="cal-badge badge-academic">Academic</span></td><td>Awareness → Interest</td></tr>
+        <tr><td><span class="cal-month">April</span></td><td>Open School Day</td><td><span class="cal-badge badge-marketing">Marketing</span></td><td>Consideration → Decision</td></tr>
+        <tr><td><span class="cal-month">May</span></td><td>Parent-Community Fest</td><td><span class="cal-badge badge-community">Community</span></td><td>Consideration</td></tr>
+        <tr><td><span class="cal-month">May</span></td><td>Inter-School Competition</td><td><span class="cal-badge badge-visibility">Visibility</span></td><td>Awareness</td></tr>
+        <tr><td><span class="cal-month">June</span></td><td>Admission Discovery Camp</td><td><span class="cal-badge badge-marketing">Marketing</span></td><td>Consideration → Decision</td></tr>
+        <tr><td><span class="cal-month">July</span></td><td>New Student Induction Day</td><td><span class="cal-badge badge-community">Community</span></td><td>Advocacy</td></tr>
+        <tr><td><span class="cal-month">Aug</span></td><td>Annual Sports & Wellness Meet</td><td><span class="cal-badge badge-visibility">Visibility</span></td><td>Awareness → Interest</td></tr>
+        <tr><td><span class="cal-month">Aug</span></td><td>Alumni Inspiration Talk</td><td><span class="cal-badge badge-marketing">Marketing</span></td><td>Interest</td></tr>
+        <tr><td><span class="cal-month">Oct</span></td><td>Cultural & Art Fest</td><td><span class="cal-badge badge-community">Community</span></td><td>Awareness</td></tr>
+        <tr><td><span class="cal-month">Oct</span></td><td>Media & Press Day</td><td><span class="cal-badge badge-visibility">Visibility</span></td><td>Awareness</td></tr>
+        <tr><td><span class="cal-month">Nov</span></td><td>Early Registration Drive</td><td><span class="cal-badge badge-marketing">Marketing</span></td><td>Decision</td></tr>
+        <tr><td><span class="cal-month">Nov</span></td><td>STEM & Robotics Expo</td><td><span class="cal-badge badge-academic">Academic</span></td><td>Interest → Decision</td></tr>
+        <tr><td><span class="cal-month">Jan</span></td><td>Annual Day & Prize Giving</td><td><span class="cal-badge badge-community">Community</span></td><td>Interest → Advocacy</td></tr>
+        <tr><td><span class="cal-month">Jan</span></td><td>Campus Walkthrough</td><td><span class="cal-badge badge-marketing">Marketing</span></td><td>Consideration → Decision</td></tr>
+        <tr><td><span class="cal-month">Feb</span></td><td>Final Admissions Push</td><td><span class="cal-badge badge-marketing">Marketing</span></td><td>Decision</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section id="events">
+  <div class="events-intro">
+    <div class="reveal">
+      <div class="section-tag">Deep Dives</div>
+      <h2 class="section-title">5 High-Impact<br><em>Events</em> to Execute</h2>
+      <p class="section-body">These five events deliver the greatest return on admissions investment. Each comes with a specific action plan for reach — direct and indirect.</p>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s">
+      <div class="event-img">
+        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80" alt="School Event">
+      </div>
+    </div>
+  </div>
+  <div class="events-grid reveal" style="transition-delay:0.3s">
+    <div class="event-card">
+      <div class="event-month">April</div>
+      <div class="event-name">Open School Day</div>
+      <ul class="event-points">
+        <li>Student-guides lead tours — more trusted than staff</li>
+        <li>Google Form QR at entry captures every visitor</li>
+        <li>Principal conversation slots via WhatsApp for serious families</li>
+        <li>Facebook event + boosted post 3 weeks prior to district parents</li>
+        <li>Take-home kit: prospectus + fee card + testimonial card</li>
+      </ul>
+    </div>
+    <div class="event-card">
+      <div class="event-month">June</div>
+      <div class="event-name">Discovery Camp</div>
+      <ul class="event-points">
+        <li>2-day free camp — art, robotics, drama. Child's excitement converts parents</li>
+        <li>Parents attend a parallel 45-min info session — zero pressure, very high conversion</li>
+        <li>Certificate with school branding goes home with every child</li>
+        <li>Personalised follow-up call within 48 hours referencing child's interests</li>
+      </ul>
+    </div>
+    <div class="event-card">
+      <div class="event-month">November</div>
+      <div class="event-name">Registration Drive</div>
+      <ul class="event-points">
+        <li>Early-bird benefit: waived fee, priority class selection, or free school kit</li>
+        <li>Personalised call from principal to every warm inquiry family in CRM</li>
+        <li>WhatsApp sequence over 2 weeks: reminder, social proof, final deadline</li>
+        <li>Ask current parents to forward registration link to 3 families they know</li>
+      </ul>
+    </div>
+    <div class="event-card">
+      <div class="event-month">January</div>
+      <div class="event-name">Campus Walkthrough</div>
+      <ul class="event-points">
+        <li>Slot-based visits of 8–10 families — intimate feels premium, not a mass tour</li>
+        <li>Route: labs, library, sports ground, classrooms — always past your best spaces</li>
+        <li>Have a student (not staff) explain their favourite thing about the school</li>
+        <li>Personalised follow-up within 24 hours mentioning something specific from their visit</li>
+      </ul>
+    </div>
+    <div class="event-card event-card-5">
+      <div class="event-card-5-img">
+        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" alt="Cultural Fest">
+      </div>
+      <div class="event-card-5-content">
+        <div class="event-month">October</div>
+        <div class="event-name">Cultural & Art Fest</div>
+        <ul class="event-points">
+          <li>Open public entry — cultural events are non-threatening. Expect 500–1000+ footfall</li>
+          <li>Live Instagram reels of performances generates 2–3 weeks of organic social reach</li>
+          <li>Press invite to regional journalists with a compelling story hook about your students</li>
+          <li>Inquiry table near exit (not 'admission desk') staffed by an approachable team member</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHANNELS -->
+<section id="channels">
+  <div class="channels-layout">
+    <div class="reveal">
+      <div class="channel-img">
+        <img src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800&q=80" alt="Communication">
+      </div>
+    </div>
+    <div class="channels-content reveal" style="transition-delay:0.2s">
+      <div class="section-tag">Channel Strategy</div>
+      <h2 class="section-title">Events Into<br><em>Reach</em></h2>
+      <p class="section-body" style="margin-bottom:2.5rem">An event without a communication plan reaches only those who attended. With the right channels, one event generates 3–6 weeks of organic visibility.</p>
+      <div class="channel-block">
+        <div class="channel-icon">💬</div>
+        <div class="channel-name">WhatsApp & Personal Outreach</div>
+        <ul class="channel-points">
+          <li>Pre-event: invitation with RSVP link sent to all current parent groups</li>
+          <li>During: live photo and video updates shared in real time</li>
+          <li>Post-event: 90-second highlight reel designed for forward-sharing</li>
+          <li>Follow-up: personalised message to every inquiry captured at the event within 24 hours</li>
+          <li>Referral chain: existing parents each asked to forward registration link to 3 families</li>
+        </ul>
+      </div>
+      <div class="channel-block">
+        <div class="channel-icon">📱</div>
+        <div class="channel-name">Instagram & Facebook</div>
+        <ul class="channel-points">
+          <li>Facebook event created 3 weeks prior — boosted to target parents in your district</li>
+          <li>Instagram reels during the event — student activities, campus energy</li>
+          <li>Post-event carousel: '10 moments from [event name]' — highest engagement format</li>
+          <li>Tag local residential societies, coaching centres, and parent communities</li>
+        </ul>
+      </div>
+      <div class="channel-block">
+        <div class="channel-icon">📰</div>
+        <div class="channel-name">Press & Community</div>
+        <ul class="channel-points">
+          <li>Press note to regional newspaper editions with a compelling story angle</li>
+          <li>School data sheet: board results, co-curricular wins, faculty credentials</li>
+          <li>Invite district education officer as guest — builds credibility for press coverage</li>
+          <li>Physical invitations distributed via coaching centres, housing societies, local shops</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="pricing-header reveal">
+    <div class="section-tag">Engagement Model</div>
+    <h2 class="section-title">How We <em>Work</em> Together</h2>
+    <p class="section-body">Plinth carries no product to sell — no software, no curriculum package. Every recommendation is independent and built for your specific institution.</p>
+  </div>
+  <div class="pricing-cards reveal" style="transition-delay:0.2s">
+    <div class="price-card">
+      <div class="price-type">Scope-Based</div>
+      <div class="price-name">Project</div>
+      <div class="price-range">Fixed engagement · <strong>₹25,000 – ₹1,50,000</strong></div>
+      <ul class="price-features">
+        <li>Admission funnel audit & design</li>
+        <li>Annual event calendar with objectives</li>
+        <li>Inquiry-to-enrollment process design</li>
+        <li>Prospectus & admission kit development</li>
+        <li>CRM / ERP selection advisory</li>
+      </ul>
+      <a href="#cta" class="price-cta">Discuss Project</a>
+    </div>
+    <div class="price-card featured">
+      <div class="price-featured-label">Most Popular</div>
+      <div class="price-type">Monthly</div>
+      <div class="price-name">Retainer</div>
+      <div class="price-range">Ongoing advisory · <strong>₹15,000 – ₹40,000 / mo</strong></div>
+      <ul class="price-features">
+        <li>Monthly pipeline review & tracking</li>
+        <li>Event execution guidance pre and post</li>
+        <li>Messaging, social & WhatsApp strategy</li>
+        <li>Admission team coaching & support</li>
+        <li>Real-time help during admission season</li>
+      </ul>
+      <a href="#cta" class="price-cta">Begin Retainer</a>
+    </div>
+    <div class="price-card">
+      <div class="price-type">Team Training</div>
+      <div class="price-name">Workshop</div>
+      <div class="price-range">Intensive training · <strong>₹20,000 – ₹50,000 / day</strong></div>
+      <ul class="price-features">
+        <li>Inquiry handling & parent conversation</li>
+        <li>Campus tour design & walkthrough</li>
+        <li>WhatsApp & social media for admissions</li>
+        <li>Converting inquiries to registrations</li>
+        <li>Building a referral culture in your school</li>
+      </ul>
+      <a href="#cta" class="price-cta">Book Workshop</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="why-layout">
+    <div class="reveal">
+      <div class="why-img">
+        <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80" alt="Consultation">
+        <div class="why-img-quote">
+          <p>"Building what institutions stand on."</p>
+          <cite>— Plinth · Institutional Consultancy</cite>
+        </div>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s">
+      <div class="section-tag">Why Plinth</div>
+      <h2 class="section-title">Independent.<br><em>Experienced.</em><br>Selective.</h2>
+      <div class="why-points">
+        <div class="why-point">
+          <div class="why-point-title">No Conflicts of Interest</div>
+          <div class="why-point-text">We accept no vendor commissions. Our only interest is your institution becoming better. Every tool or service we recommend is evaluated purely on fit.</div>
+        </div>
+        <div class="why-point">
+          <div class="why-point-title">Institutional Experience</div>
+          <div class="why-point-text">Our team has worked from inside schools — we understand what is operationally realistic, not just theoretically ideal.</div>
+        </div>
+        <div class="why-point">
+          <div class="why-point-title">Selective Engagement</div>
+          <div class="why-point-text">We maintain a small roster. Every client receives full, undivided attention — not the leftovers of a stretched consultant.</div>
+        </div>
+        <div class="why-point">
+          <div class="why-point-title">Independent Advice</div>
+          <div class="why-point-text">Every recommendation is built for your specific school — its board, community, board affiliation, and constraints.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="reveal">
+    <div class="section-tag">Next Steps</div>
+    <h2 class="section-title">Begin a <em>Conversation</em></h2>
+    <p class="section-body">If your school is thinking about event strategy, admission funnel design, team training, or ongoing advisory — reach out. We begin with a no-obligation conversation about your institution's specific situation.</p>
+    <div style="display:flex;justify-content:center;gap:1.2rem;margin-top:2.5rem;flex-wrap:wrap">
+      <a href="mailto:plinthconsultancy@gmail.com" class="btn-primary">Send an Email</a>
+      <a href="https://plinthconsultancy.in" target="_blank" class="btn-ghost" style="border-color:rgba(0,0,0,0.2);color:var(--ink)">Visit Website</a>
+    </div>
+    <div class="cta-contact">
+      <div class="contact-item">
+        <span class="contact-label">Email</span>
+        <span class="contact-value">plinthconsultancy@gmail.com</span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">Website</span>
+        <span class="contact-value">www.plinthconsultancy.in</span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">Serving</span>
+        <span class="contact-value">K-12 Schools · Pan-India</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">P<span>L</span>INTH</div>
+  <div class="footer-tagline">Building what institutions stand on.</div>
+  <div class="footer-text">Confidential · For school leadership only · © 2025</div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  });
+  (function animRing() {
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    ring.style.transform = 'translate(-50%, -50%)';
+    cursor.style.transform = 'translate(-50%, -50%)';
+    requestAnimationFrame(animRing);
+  })();
+  document.querySelectorAll('a, button, .event-card, .stage-card, .price-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      ring.style.width = '60px'; ring.style.height = '60px';
+      ring.style.borderColor = 'rgba(200,169,110,0.8)';
+    });
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '36px'; ring.style.height = '36px';
+      ring.style.borderColor = 'rgba(200,169,110,0.5)';
+    });
+  });
+
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }});
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => io.observe(el));
+
+  // Counter animation
+  const counters = document.querySelectorAll('[data-target]');
+  const cio = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        const target = +el.dataset.target;
+        let cur = 0;
+        const step = target / 40;
+        const timer = setInterval(() => {
+          cur += step;
+          if (cur >= target) { el.textContent = target; clearInterval(timer); }
+          else { el.textContent = Math.floor(cur); }
+        }, 30);
+        cio.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => cio.observe(c));
+
+  // ── CINEMATIC HERO CANVAS ──────────────────────────────────────────────
+  (function() {
+    const canvas = document.getElementById('hero-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, img, imgLoaded = false;
+
+    // Ken Burns state
+    let kb = { x: 0, y: 0, scale: 1.08, tx: 0, ty: 0 };
+    let kbTarget = { tx: 0, ty: 0, scale: 1.0 };
+    let kbPhase = 0;
+
+    function resize() {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Load background image
+    img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1800&q=80';
+    img.onload = () => { imgLoaded = true; };
+
+    // Bokeh particles
+    const bokeh = Array.from({ length: 55 }, () => makeBokeh());
+    function makeBokeh(fromBottom = false) {
+      return {
+        x: Math.random() * 1.2 - 0.1,
+        y: fromBottom ? 1.05 : Math.random() * 1.2,
+        r: 2 + Math.random() * 22,
+        opacity: 0.04 + Math.random() * 0.14,
+        speed: 0.00006 + Math.random() * 0.00012,
+        drift: (Math.random() - 0.5) * 0.00015,
+        phase: Math.random() * Math.PI * 2,
+        gold: Math.random() > 0.55,
+        pulse: 0.4 + Math.random() * 0.6
+      };
+    }
+
+    // Dust motes
+    const dust = Array.from({ length: 120 }, () => makeDust());
+    function makeDust(fromBottom = false) {
+      return {
+        x: Math.random(),
+        y: fromBottom ? 1.02 : Math.random(),
+        r: 0.5 + Math.random() * 1.8,
+        opacity: 0.03 + Math.random() * 0.09,
+        speed: 0.00003 + Math.random() * 0.00008,
+        drift: (Math.random() - 0.5) * 0.0001,
+      };
+    }
+
+    // Light rays
+    const rays = [
+      { x: 0.18, angle: 0.38, width: 0.22, opacity: 0.045, speed: 0.00018 },
+      { x: 0.62, angle: -0.15, width: 0.18, opacity: 0.03, speed: 0.00012 },
+      { x: 0.85, angle: 0.25, width: 0.14, opacity: 0.025, speed: 0.00022 },
+    ];
+    rays.forEach(r => r.phase = Math.random() * Math.PI * 2);
+
+    // Vignette gradient (cached)
+    let vigGrad = null;
+    function getVignette() {
+      if (!vigGrad || vigGrad._w !== W) {
+        vigGrad = ctx.createRadialGradient(W/2, H/2, H*0.15, W/2, H/2, H*0.9);
+        vigGrad.addColorStop(0, 'rgba(13,13,15,0)');
+        vigGrad.addColorStop(1, 'rgba(13,13,15,0.75)');
+        vigGrad._w = W;
+      }
+      return vigGrad;
+    }
+
+    let t = 0;
+    function draw(ts) {
+      requestAnimationFrame(draw);
+      t = ts * 0.001;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // ── 1. BACKGROUND IMAGE with Ken Burns ──
+      if (imgLoaded) {
+        ctx.save();
+        // Slow KB: oscillate zoom + gentle drift
+        const kbScale = 1.08 + Math.sin(t * 0.025) * 0.04;
+        const kbOffX = Math.sin(t * 0.018) * 0.025;
+        const kbOffY = Math.cos(t * 0.013) * 0.018;
+        const iw = img.naturalWidth, ih = img.naturalHeight;
+        const fitScale = Math.max(W / iw, H / ih) * kbScale;
+        const dx = (W - iw * fitScale) / 2 + kbOffX * W;
+        const dy = (H - ih * fitScale) / 2 + kbOffY * H;
+        ctx.filter = 'brightness(0.22) saturate(0.38)';
+        ctx.drawImage(img, dx, dy, iw * fitScale, ih * fitScale);
+        ctx.filter = 'none';
+        ctx.restore();
+      } else {
+        ctx.fillStyle = '#0D0D0F';
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      // ── 2. ATMOSPHERIC COLOR WASH ──
+      const wash = ctx.createLinearGradient(0, 0, W, H);
+      const shift = Math.sin(t * 0.04) * 0.5 + 0.5;
+      wash.addColorStop(0, `rgba(200,169,110,${0.03 + shift * 0.025})`);
+      wash.addColorStop(0.5, 'rgba(13,13,15,0)');
+      wash.addColorStop(1, `rgba(13,13,15,${0.35 + shift * 0.1})`);
+      ctx.fillStyle = wash;
+      ctx.fillRect(0, 0, W, H);
+
+      // ── 3. VOLUMETRIC LIGHT RAYS ──
+      ctx.save();
+      rays.forEach(ray => {
+        ray.phase += ray.speed;
+        const opacity = ray.opacity * (0.6 + Math.sin(ray.phase) * 0.4);
+        const cx = ray.x * W;
+        const len = H * 1.6;
+
+        ctx.save();
+        ctx.translate(cx, -H * 0.05);
+        ctx.rotate(ray.angle + Math.sin(ray.phase * 0.7) * 0.04);
+
+        const rg = ctx.createLinearGradient(0, 0, 0, len);
+        rg.addColorStop(0, `rgba(200,169,110,${opacity * 0.9})`);
+        rg.addColorStop(0.3, `rgba(200,169,110,${opacity * 0.5})`);
+        rg.addColorStop(0.7, `rgba(200,169,110,${opacity * 0.15})`);
+        rg.addColorStop(1, 'rgba(200,169,110,0)');
+
+        const hw = ray.width * W * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(-hw * 0.2, 0);
+        ctx.lineTo(-hw, len);
+        ctx.lineTo(hw, len);
+        ctx.lineTo(hw * 0.2, 0);
+        ctx.closePath();
+        ctx.fillStyle = rg;
+        ctx.fill();
+        ctx.restore();
+      });
+      ctx.restore();
+
+      // ── 4. BOKEH PARTICLES ──
+      bokeh.forEach(b => {
+        b.y -= b.speed;
+        b.x += b.drift;
+        b.phase += 0.008;
+        if (b.y < -0.05) { Object.assign(b, makeBokeh(true)); }
+
+        const px = b.x * W, py = b.y * H;
+        const pulse = b.opacity * (b.pulse + Math.sin(b.phase) * (1 - b.pulse));
+        const grad = ctx.createRadialGradient(px, py, 0, px, py, b.r);
+        if (b.gold) {
+          grad.addColorStop(0, `rgba(200,169,110,${pulse})`);
+          grad.addColorStop(0.4, `rgba(200,169,110,${pulse * 0.4})`);
+        } else {
+          grad.addColorStop(0, `rgba(250,250,247,${pulse * 0.8})`);
+          grad.addColorStop(0.4, `rgba(250,250,247,${pulse * 0.25})`);
+        }
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.beginPath();
+        ctx.arc(px, py, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      });
+
+      // ── 5. DUST MOTES ──
+      dust.forEach(d => {
+        d.y -= d.speed;
+        d.x += d.drift + Math.sin(t * 0.3 + d.phase) * 0.00005;
+        if (d.y < -0.02) { Object.assign(d, makeDust(true)); }
+        ctx.beginPath();
+        ctx.arc(d.x * W, d.y * H, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,169,110,${d.opacity})`;
+        ctx.fill();
+      });
+
+      // ── 6. HORIZONTAL SCAN LINES (subtle film feel) ──
+      ctx.save();
+      const scanOffset = (t * 30) % 4;
+      for (let y = scanOffset; y < H; y += 4) {
+        ctx.fillStyle = 'rgba(0,0,0,0.018)';
+        ctx.fillRect(0, y, W, 1);
+      }
+      ctx.restore();
+
+      // ── 7. VIGNETTE ──
+      ctx.fillStyle = getVignette();
+      ctx.fillRect(0, 0, W, H);
+
+      // ── 8. GOLDEN HORIZON LINE ──
+      const hLineY = H * (0.58 + Math.sin(t * 0.02) * 0.01);
+      const hg = ctx.createLinearGradient(W * 0.1, 0, W * 0.9, 0);
+      hg.addColorStop(0, 'rgba(200,169,110,0)');
+      hg.addColorStop(0.3, `rgba(200,169,110,${0.12 + Math.sin(t * 0.05) * 0.04})`);
+      hg.addColorStop(0.7, `rgba(200,169,110,${0.12 + Math.sin(t * 0.05) * 0.04})`);
+      hg.addColorStop(1, 'rgba(200,169,110,0)');
+      ctx.fillStyle = hg;
+      ctx.fillRect(W * 0.1, hLineY, W * 0.8, 1);
+    }
+    requestAnimationFrame(draw);
+  })();
+  // ── END CINEMATIC CANVAS ───────────────────────────────────────────────
+
+  // Smooth reveal delay for children
+  document.querySelectorAll('.stages-grid .stage-card').forEach((card, i) => {
+    card.style.transitionDelay = (i * 0.08) + 's';
+    card.classList.add('reveal');
+    io.observe(card);
+  });
+</script>
+</body>
+</html>
